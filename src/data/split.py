@@ -15,7 +15,7 @@ def split_dataset(processed_dir, splits_dir, ratios=(0.7, 0.15, 0.15)):
 
     for cls in classes:
         cls_dir = os.path.join(processed_dir, cls)
-        images = glob(os.path.join(cls_dir, '*.*'))
+        images = sorted(glob(os.path.join(cls_dir, '*.*')))
         
         if len(images) == 0:
             continue

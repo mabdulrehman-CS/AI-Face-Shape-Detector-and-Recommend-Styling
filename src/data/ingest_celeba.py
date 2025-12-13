@@ -110,4 +110,8 @@ def ingest_celeba_males(count=2000):
                 if os.path.exists(src_path_jpg):
                      shutil.copy(src_path_jpg, dst_path + '.jpg')
                      successful += 1
-            
+            
+    print(f"Successfully ingested {successful} male images.")
+
+if __name__ == "__main__":
+    ingest_celeba_males()

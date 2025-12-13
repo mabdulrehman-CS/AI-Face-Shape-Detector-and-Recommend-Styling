@@ -28,8 +28,12 @@ def get_dataset(data_dir, split):
     )
     return ds
 
-def train():
+import argparse
+
+def train(epochs_head=10, epochs_fine=50, resume=False):
     data_path = os.path.join(os.getcwd(), 'data', 'splits')
+    checkpoint_dir = os.path.join(os.getcwd(), 'models', 'checkpoints')
+    os.makedirs(checkpoint_dir, exist_ok=True)
     
     print("Loading datasets...")
     try:
@@ -46,51 +50,71 @@ def train():
         tf.keras.layers.RandomZoom(0.1),
     ])
     
-    # Apply augmentation to train_ds
     train_ds = train_ds.map(lambda x, y: (data_augmentation(x, training=True), y))
-    
-    # Prefetch
     train_ds = train_ds.prefetch(buffer_size=tf.data.AUTOTUNE)
     val_ds = val_ds.prefetch(buffer_size=tf.data.AUTOTUNE)
     
-    # 1. Initialize Model
-    # Get class names from dataset
-    # We can infer num_classes from directory structure if we want to be safe, but 5 is standard here
-    num_classes = 5 
-    model = build_model(num_classes=num_classes)
-    
     loss_fn = get_focal_loss()
-    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
     
-    model.compile(optimizer=optimizer, loss=loss_fn, metrics=['accuracy'])
+    model_path = os.path.join(os.getcwd(), 'models', 'final_model.keras')
+    best_fine_path = os.path.join(checkpoint_dir, 'best_fine.keras')
+    best_head_path = os.path.join(checkpoint_dir, 'best_head.keras')
     
-    # Checkpoints
-    checkpoint_dir = os.path.join(os.getcwd(), 'models', 'checkpoints')
-    os.makedirs(checkpoint_dir, exist_ok=True)
+    model = None
     
-    callbacks = [
-        ModelCheckpoint(os.path.join(checkpoint_dir, 'best_head.keras'), save_best_only=True, monitor='val_accuracy'),
-        EarlyStopping(patience=3, monitor='val_loss')
-    ]
+    if resume:
+        # Priority: Final -> Best Fine -> Best Head
+        if os.path.exists(model_path):
+            print(f"Resuming from final model: {model_path}")
+            model = tf.keras.models.load_model(model_path, custom_objects={'focal_loss': loss_fn})
+        elif os.path.exists(best_fine_path):
+            print(f"Resuming from best fine-tuned checkpoint: {best_fine_path}")
+            model = tf.keras.models.load_model(best_fine_path, custom_objects={'focal_loss': loss_fn})
+        elif os.path.exists(best_head_path):
+            print(f"Resuming from best head checkpoint: {best_head_path}")
+            model = tf.keras.models.load_model(best_head_path, custom_objects={'focal_loss': loss_fn})
+            # If we resume from head, we might be in fine-tuning stage or head stage. 
+            # Simplification: If resuming, assume we are in fine-tuning mode unless specified otherwise?
+            # Or just return the model and let the logic flow.
     
-    print("\nStage 1: Frozen Backbone Training (10 Epochs)")
-    history_head = model.fit(
-        train_ds,
-        validation_data=val_ds,
-        epochs=EPOCHS_HEAD,
-        callbacks=callbacks
-    )
-    
+    if model is None:
+        print("\nStage 1: Frozen Backbone Training")
+        num_classes = 5 
+        model = build_model(num_classes=num_classes)
+        optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
+        model.compile(optimizer=optimizer, loss=loss_fn, metrics=['accuracy'])
+        
+        callbacks = [
+            ModelCheckpoint(best_head_path, save_best_only=True, monitor='val_accuracy'),
+            EarlyStopping(patience=3, monitor='val_loss')
+        ]
+        
+        model.fit(
+            train_ds,
+            validation_data=val_ds,
+            epochs=epochs_head,
+            callbacks=callbacks
+        )
+    else:
+        print("Skipping Stage 1 (Model Loaded/Resumed)")
+
     # 2. Fine-tuning
-    print("\nStage 2: Full Fine-Tuning (Unfreezing top 30%)")
+    print(f"\nStage 2: Full Fine-Tuning (Target Epochs: {epochs_fine})")
+    
+    # Check if model is already unfrozen (how? check trainable count)
+    # Or just ensure it is unfrozen and compiled.
     model = unfreeze_model(model, percent=0.3)
     
-    # Lower LR for fine-tuning
+    # We always recompile to ensure optimizer state is tied to this run or refreshed if needed.
+    # If loading a model with optimizer state, compiling *might* reset it unless we fit directly.
+    # Ideally, load_model loads the optimizer too.
+    # But if we change learning rate, we need to recompile.
+    
     optimizer_fine = tf.keras.optimizers.Adam(learning_rate=1e-5)
     model.compile(optimizer=optimizer_fine, loss=loss_fn, metrics=['accuracy'])
     
     callbacks_fine = [
-        ModelCheckpoint(os.path.join(checkpoint_dir, 'best_fine.keras'), save_best_only=True, monitor='val_accuracy'),
+        ModelCheckpoint(best_fine_path, save_best_only=True, monitor='val_accuracy'),
         EarlyStopping(patience=10, monitor='val_loss'),
         ReduceLROnPlateau(factor=0.2, patience=5)
     ]
@@ -98,14 +122,20 @@ def train():
     history_fine = model.fit(
         train_ds,
         validation_data=val_ds,
-        epochs=EPOCHS_FINE,
+        epochs=epochs_fine,
         callbacks=callbacks_fine
     )
     
-    print("Training Complete.")
-    final_path = os.path.join(os.getcwd(), 'models', 'final_model.keras')
-    model.save(final_path)
-    print(f"Model saved to {final_path}")
+    print("Chunk Training Complete.")
+    model.save(model_path)
+    print(f"Model saved to {model_path}")
 
 if __name__ == "__main__":
-    train()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--epochs', type=int, default=50, help='Number of fine-tuning epochs')
+    parser.add_argument('--resume', action='store_true', help='Resume from checkpoint')
+    args = parser.parse_args()
+    
+    # If resume is True, we skip head training (epochs_head=0 effectively logic wise inside)
+    # We pass args.epochs as epochs_fine
+    train(epochs_head=10, epochs_fine=args.epochs, resume=args.resume)

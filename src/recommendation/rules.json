@@ -1,0 +1,103 @@
+{
+  "Heart": {
+    "description": "Wide forehead and cheekbones with a narrow chin.",
+    "hairstyles": [
+      "Side part",
+      "Long fringe",
+      "Textured crop",
+      "Wavy layers"
+    ],
+    "beards": [
+      "Full beard (adds width to jaw)",
+      "Stubble (adds texture)",
+      "Mutton chops (if daring)"
+    ],
+    "glasses": [
+      "Round frames",
+      "Cat-eye (if applicable)",
+      "Rimless"
+    ],
+    "avoid": "High volume on sides (widens top further)"
+  },
+  "Oblong": {
+    "description": "Face is longer than it is wide.",
+    "hairstyles": [
+      "Side part (adds width)",
+      "Buzz cut",
+      "Fringe (shortens face length)",
+      "Layered cuts"
+    ],
+    "beards": [
+      "Stubble",
+      "Short beard",
+      "Mutton chops"
+    ],
+    "glasses": [
+      "Square frames",
+      "Aviators",
+      "Wayfarers"
+    ],
+    "avoid": "Long beards (lengthens face), High pompadours"
+  },
+  "Oval": {
+    "description": "Balanced proportions, slightly narrower at the jaw than temples.",
+    "hairstyles": [
+      "Pompadour",
+      "Undercut",
+      "Quiff",
+      "Faux Hawk",
+      "Almost anything works"
+    ],
+    "beards": [
+      "Any style",
+      "Stubble",
+      "Goatee"
+    ],
+    "glasses": [
+      "Any frame shape",
+      "Geometric frames"
+    ],
+    "avoid": "Forehead covering fringes (hides the balance)"
+  },
+  "Round": {
+    "description": "Face width and length are roughly equal, soft jawline.",
+    "hairstyles": [
+      "Pompadour (adds height)",
+      "Faux Hawk",
+      "High fade",
+      "Side part with volume"
+    ],
+    "beards": [
+      "Goatee (adds structure)",
+      "Van Dyke",
+      "Angular stubble"
+    ],
+    "glasses": [
+      "Rectangular frames",
+      "Square frames",
+      "Angular frames"
+    ],
+    "avoid": "Fringes (shortens face), Volume on sides"
+  },
+  "Square": {
+    "description": "Sharp jawline, equal width at forehead, cheekbones, and jaw.",
+    "hairstyles": [
+      "Crew cut",
+      "Undercut",
+      "Quiff",
+      "Textured Crop"
+    ],
+    "beards": [
+      "Circle beard",
+      "Goatee",
+      "Petite Goatee",
+      "Stubble (softens jaw)"
+    ],
+    "glasses": [
+      "Round frames (softens angles)",
+      "Aviators",
+      "Oval frames"
+    ],
+    "avoid": "Square cuts (too boxy), Center parts"
+  }
+}

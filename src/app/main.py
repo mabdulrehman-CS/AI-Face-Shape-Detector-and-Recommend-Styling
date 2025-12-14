@@ -1,7 +1,7 @@
 import os
 import sys
 import shutil
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import uvicorn
@@ -154,31 +154,30 @@ async def switch_model(request: ModelSwitchRequest):
         return JSONResponse(status_code=500, content={"error": "Failed to load model"})
 
 @app.post("/analyze")
-async def analyze_face(file: UploadFile = File(...)):
+async def analyze_face(file: UploadFile = File(...), gender: str = Form("Male")):
     if not engine:
         return JSONResponse(status_code=503, content={"error": "Model not loaded"})
     
+    # Save Image Temporarily
+    temp_file_path = f"temp_{file.filename}"
+    with open(temp_file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
     try:
-        # Save temp file
-        temp_filename = f"temp_{file.filename}"
-        with open(temp_filename, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-            
-        # Predict
-        result = engine.predict(temp_filename)
+        # Run Hybrid Analysis with Gender
+        result = engine.predict(temp_file_path, gender=gender)
         
         # Cleanup
-        if os.path.exists(temp_filename):
-            os.remove(temp_filename)
+        os.remove(temp_file_path)
         
-        # Check for geometric/pipeline errors
         if "error" in result:
-             return JSONResponse(status_code=400, content=result)
+             return JSONResponse(status_code=400, content={"error": result["error"]})
              
         return JSONResponse(content=result)
         
     except Exception as e:
-        print(f"Prediction Error: {e}")
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 if __name__ == "__main__":

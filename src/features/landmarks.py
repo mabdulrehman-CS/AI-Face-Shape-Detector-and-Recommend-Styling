@@ -18,6 +18,7 @@ class FaceLandmarkExtractor:
         Returns np.array of shape (478, 3) or None if no face found.
         """
         img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # print(f"DEBUG: Processing Image for Landmarks. Shape: {img_rgb.shape}")
         results = self.face_mesh.process(img_rgb)
         
         if results.multi_face_landmarks:

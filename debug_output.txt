@@ -1,60 +1,60 @@
 
 --- Testing Class: Round ---
 Image: nl_round (100).jpg
-  Final Decision: Round (Conf: 74.6%)
-  CNN: Round (0.4718)
+  Final Decision: Round (Conf: 82.5%)
+  CNN: Round (0.6056)
   Geom: Round
-  Metrics: FWHR=0.97, JFR=0.88, Angle=135.7
+  Metrics: FWHR=0.97, JFR=0.87, Angle=135.9
   -> Used LOW CONFIDENCE Mix (0.65/0.35)
 Image: nl_round (107).jpg
-  Final Decision: Round (Conf: 65.5%)
-  CNN: Heart (0.3392)
+  Final Decision: Round (Conf: 79.3%)
+  CNN: Round (0.5338)
   Geom: Round
-  Metrics: FWHR=0.95, JFR=0.84, Angle=140.8
+  Metrics: FWHR=0.96, JFR=0.84, Angle=140.8
   -> Used LOW CONFIDENCE Mix (0.65/0.35)
 Image: nl_round (125).jpg
-  Final Decision: Round (Conf: 66.5%)
-  CNN: Oval (0.3133)
+  Final Decision: Round (Conf: 76.7%)
+  CNN: Round (0.4759)
   Geom: Round
-  Metrics: FWHR=0.90, JFR=0.90, Angle=137.6
+  Metrics: FWHR=0.90, JFR=0.90, Angle=137.7
   -> Used LOW CONFIDENCE Mix (0.65/0.35)
 
 --- Testing Class: Oval ---
 Image: nl_oval (100).jpg
-  Final Decision: Round (Conf: 54.3%)
-  CNN: Heart (0.5512)
+  Final Decision: Heart (Conf: 55.7%)
+  CNN: Heart (0.5023)
   Geom: Round
   Metrics: FWHR=0.93, JFR=0.88, Angle=135.7
   -> Used LOW CONFIDENCE Mix (0.65/0.35)
 Image: nl_oval (107).jpg
-  Final Decision: Round (Conf: 55.8%)
-  CNN: Oblong (0.4184)
+  Final Decision: Round (Conf: 50.4%)
+  CNN: Oblong (0.2927)
   Geom: Round
-  Metrics: FWHR=0.94, JFR=0.87, Angle=138.7
+  Metrics: FWHR=0.94, JFR=0.86, Angle=139.4
   -> Used LOW CONFIDENCE Mix (0.65/0.35)
 Image: nl_oval (125).jpg
-  Final Decision: Round (Conf: 63.3%)
-  CNN: Oval (0.4416)
+  Final Decision: Round (Conf: 57.9%)
+  CNN: Oval (0.3787)
   Geom: Round
-  Metrics: FWHR=0.97, JFR=0.87, Angle=140.4
+  Metrics: FWHR=0.97, JFR=0.87, Angle=140.0
   -> Used LOW CONFIDENCE Mix (0.65/0.35)
 
 --- Testing Class: Heart ---
 Image: nl_heart (100).jpg
-  Final Decision: Heart (Conf: 60.8%)
-  CNN: Heart (0.7249)
+  Final Decision: Heart (Conf: 70.5%)
+  CNN: Heart (0.7530)
   Geom: Round
-  Metrics: FWHR=0.94, JFR=0.85, Angle=141.5
-  -> Used LOW CONFIDENCE Mix (0.65/0.35)
+  Metrics: FWHR=0.94, JFR=0.84, Angle=142.1
+  -> Triggered HIGH CONFIDENCE CNN Override (0.95/0.05)
 Image: nl_heart (107).jpg
-  Final Decision: Round (Conf: 60.7%)
-  CNN: Heart (0.6104)
+  Final Decision: Heart (Conf: 68.1%)
+  CNN: Heart (0.7118)
   Geom: Round
-  Metrics: FWHR=0.96, JFR=0.87, Angle=144.4
+  Metrics: FWHR=0.96, JFR=0.87, Angle=144.2
   -> Used LOW CONFIDENCE Mix (0.65/0.35)
 Image: nl_heart (125).jpg
-  Final Decision: Heart (Conf: 81.4%)
-  CNN: Heart (0.7881)
+  Final Decision: Heart (Conf: 82.7%)
+  CNN: Heart (0.8523)
   Geom: Round
-  Metrics: FWHR=0.98, JFR=0.88, Angle=139.6
+  Metrics: FWHR=0.98, JFR=0.88, Angle=139.3
   -> Triggered HIGH CONFIDENCE CNN Override (0.95/0.05)

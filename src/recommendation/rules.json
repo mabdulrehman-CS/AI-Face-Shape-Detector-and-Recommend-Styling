@@ -1,103 +1,182 @@
 {
   "Heart": {
     "description": "Wide forehead and cheekbones with a narrow chin.",
-    "hairstyles": [
-      "Side part",
-      "Long fringe",
-      "Textured crop",
-      "Wavy layers"
-    ],
+    "hairstyles": {
+      "male": [
+        "Side part",
+        "Long fringe",
+        "Textured crop",
+        "Wavy layers"
+      ],
+      "female": [
+        "Chin-length Bob",
+        "Side-swept Bangs",
+        "Long Waves",
+        "Pixie Cut"
+      ]
+    },
     "beards": [
       "Full beard (adds width to jaw)",
       "Stubble (adds texture)",
-      "Mutton chops (if daring)"
+      "Mutton chops"
+    ],
+    "makeup": [
+      "Highlight chin to add width",
+      "Soften forehead with bronzer",
+      "Focus on eyes"
     ],
     "glasses": [
       "Round frames",
-      "Cat-eye (if applicable)",
+      "Cat-eye",
       "Rimless"
     ],
-    "avoid": "High volume on sides (widens top further)"
+    "avoid": {
+      "male": "High volume on sides (widens top further)",
+      "female": "Short blunt bobs (emphasizes chin sharpness)"
+    }
   },
   "Oblong": {
     "description": "Face is longer than it is wide.",
-    "hairstyles": [
-      "Side part (adds width)",
-      "Buzz cut",
-      "Fringe (shortens face length)",
-      "Layered cuts"
-    ],
+    "hairstyles": {
+      "male": [
+        "Side part (adds width)",
+        "Buzz cut",
+        "Fringe",
+        "Layered cuts"
+      ],
+      "female": [
+        "Shoulder-length waves",
+        "Blunt bang",
+        "Voluminous curls",
+        "Short Bob"
+      ]
+    },
     "beards": [
       "Stubble",
       "Short beard",
       "Mutton chops"
+    ],
+    "makeup": [
+      "Horizontal blush placement (widens face)",
+      "Contour forehead and chin",
+      "Bold lips"
     ],
     "glasses": [
       "Square frames",
       "Aviators",
       "Wayfarers"
     ],
-    "avoid": "Long beards (lengthens face), High pompadours"
+    "avoid": {
+      "male": "Long beards, High pompadours (lengthens face)",
+      "female": "Long straight hair (drags face down), High buns"
+    }
   },
   "Oval": {
     "description": "Balanced proportions, slightly narrower at the jaw than temples.",
-    "hairstyles": [
-      "Pompadour",
-      "Undercut",
-      "Quiff",
-      "Faux Hawk",
-      "Almost anything works"
-    ],
+    "hairstyles": {
+      "male": [
+        "Pompadour",
+        "Undercut",
+        "Quiff",
+        "Faux Hawk"
+      ],
+      "female": [
+        "Long layers",
+        "Bob cut",
+        "Beach waves",
+        "Sleek ponytail"
+      ]
+    },
     "beards": [
       "Any style",
       "Stubble",
       "Goatee"
     ],
+    "makeup": [
+      "Balanced application",
+      "Natural contour",
+      "Experiment with bold eyes or lips"
+    ],
     "glasses": [
       "Any frame shape",
       "Geometric frames"
     ],
-    "avoid": "Forehead covering fringes (hides the balance)"
+    "avoid": {
+      "male": "Forehead covering fringes (hides balance)",
+      "female": "Heavy bangs (hides forehead)"
+    }
   },
   "Round": {
     "description": "Face width and length are roughly equal, soft jawline.",
-    "hairstyles": [
-      "Pompadour (adds height)",
-      "Faux Hawk",
-      "High fade",
-      "Side part with volume"
-    ],
+    "hairstyles": {
+      "male": [
+        "Pompadour (adds height)",
+        "Faux Hawk",
+        "High fade",
+        "Side part"
+      ],
+      "female": [
+        "Long layered cuts",
+        "Choppy Pixie",
+        "Deep side part",
+        "High ponytail"
+      ]
+    },
     "beards": [
       "Goatee (adds structure)",
       "Van Dyke",
       "Angular stubble"
+    ],
+    "makeup": [
+      "Contour cheekbones (adds definition)",
+      "Highlight bridge of nose",
+      "Arched brows"
     ],
     "glasses": [
       "Rectangular frames",
       "Square frames",
       "Angular frames"
     ],
-    "avoid": "Fringes (shortens face), Volume on sides"
+    "avoid": {
+      "male": "Fringes (shortens face), Volume on sides",
+      "female": "Chin-length bobs (emphasizes roundness), Straight bangs"
+    }
   },
   "Square": {
     "description": "Sharp jawline, equal width at forehead, cheekbones, and jaw.",
-    "hairstyles": [
-      "Crew cut",
-      "Undercut",
-      "Quiff",
-      "Textured Crop"
-    ],
+    "hairstyles": {
+      "male": [
+        "Crew cut",
+        "Undercut",
+        "Quiff",
+        "Textured Crop"
+      ],
+      "female": [
+        "Soft layers",
+        "Long Bob (Lob)",
+        "Side-swept bangs",
+        "Soft curls"
+      ]
+    },
     "beards": [
       "Circle beard",
       "Goatee",
       "Petite Goatee",
-      "Stubble (softens jaw)"
+      "Stubble"
+    ],
+    "makeup": [
+      "Soften jawline with contour",
+      "Round blush placement",
+      "Soft eye makeup"
     ],
     "glasses": [
-      "Round frames (softens angles)",
+      "Round frames",
       "Aviators",
       "Oval frames"
     ],
-    "avoid": "Square cuts (too boxy), Center parts"
+    "avoid": {
+      "male": "Square cuts (too boxy), Center parts",
+      "female": "Blunt bobs at jawline, Slicked back hair"
+    }
   }
 }

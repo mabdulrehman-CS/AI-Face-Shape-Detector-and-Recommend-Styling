@@ -86,11 +86,12 @@ function handleFile(file) {
         return;
     }
 
-    // Show Preview
+    // Show Preview Immediately
     const reader = new FileReader();
     reader.onload = (e) => {
         previewImg.src = e.target.result;
-        dropZone.parentNode.style.display = 'none';
+        // Hide Input Selection (The whole section)
+        document.querySelector('.upload-section').style.display = 'none';
         previewSection.style.display = 'block';
 
         // Start Analysis
@@ -100,8 +101,19 @@ function handleFile(file) {
 }
 
 async function uploadAndAnalyze(file) {
+    if (!file) return;
+
+    statusText.innerText = "Analyzing...";
+    statusText.style.color = "#bb86fc";
+    resultsSection.classList.add('hidden');
+
+    // Create FormData
     const formData = new FormData();
     formData.append('file', file);
+
+    // Get Selected Gender
+    const gender = document.querySelector('input[name="gender"]:checked').value;
+    formData.append('gender', gender);
 
     try {
         const response = await fetch('/analyze', {
@@ -112,17 +124,40 @@ async function uploadAndAnalyze(file) {
         const data = await response.json();
 
         if (response.ok) {
+            statusText.innerText = "Analysis Complete!";
+            statusText.style.color = "#03dac6";
             // Wait a bit for animation
             setTimeout(() => {
                 showResults(data);
-            }, 2000);
+            }, 1000);
         } else {
             statusText.innerText = "Error: " + (data.error || "Analysis failed");
             statusText.style.color = "#ff453a";
+            // Show reset button so they can try again
+            // We can inject a 'Try Again' button or just rely on ResetApp
+            // Let's create a temporary try again link/button if error
+            if (!document.getElementById('temp-reset-btn')) {
+                const btn = document.createElement('button');
+                btn.id = 'temp-reset-btn';
+                btn.className = 'btn-reset';
+                btn.innerText = "Try Different Photo";
+                btn.style.marginTop = "20px";
+                btn.onclick = resetApp;
+                previewSection.appendChild(btn);
+            }
         }
     } catch (error) {
         statusText.innerText = "Error: Connection failed";
         statusText.style.color = "#ff453a";
+        if (!document.getElementById('temp-reset-btn')) {
+            const btn = document.createElement('button');
+            btn.id = 'temp-reset-btn';
+            btn.className = 'btn-reset';
+            btn.innerText = "Try Again";
+            btn.style.marginTop = "20px";
+            btn.onclick = resetApp;
+            previewSection.appendChild(btn);
+        }
     }
 }
 
@@ -142,8 +177,19 @@ function showResults(data) {
     document.getElementById('shape-desc').innerText = recs.description || "";
 
     fillList('hair-list', recs.hairstyles);
-    fillList('beard-list', recs.beards);
     fillList('glasses-list', recs.glasses);
+
+    // Dynamic Middle Card (Beard vs Makeup)
+    const middleList = document.getElementById('beard-list');
+    const middleTitle = middleList.previousElementSibling; // The <h3> tag
+
+    if (recs.makeup && recs.makeup.length > 0) {
+        middleTitle.innerText = "💄 Makeup";
+        fillList('beard-list', recs.makeup);
+    } else {
+        middleTitle.innerText = "🧔 Beards";
+        fillList('beard-list', recs.beards);
+    }
 
     document.getElementById('avoid-text').innerText = recs.avoid || "None";
 }
@@ -151,7 +197,7 @@ function showResults(data) {
 function fillList(elementId, items) {
     const ul = document.getElementById(elementId);
     ul.innerHTML = "";
-    if (items) {
+    if (items && Array.isArray(items)) { // Check array validity
         items.forEach(item => {
             const li = document.createElement('li');
             li.innerText = item;
@@ -162,10 +208,15 @@ function fillList(elementId, items) {
 
 function resetApp() {
     resultsSection.style.display = 'none';
-    dropZone.parentNode.style.display = 'flex';
+    document.querySelector('.upload-section').style.display = 'block'; // Show inputs again
+    previewSection.style.display = 'none'; // Hide preview
     fileInput.value = '';
     statusText.innerText = "Scanning facial features...";
     statusText.style.color = "#bb86fc";
+
+    // Remove temp button if exists
+    const tempBtn = document.getElementById('temp-reset-btn');
+    if (tempBtn) tempBtn.remove();
 }
 
 // Metrics Display
@@ -248,5 +299,136 @@ function renderMatrix(matrix, classes) {
 
             container.appendChild(cell);
         });
+    });
+}
+
+// ================= Webcam Logic =================
+const cameraBtn = document.getElementById('start-camera-btn');
+const cameraContainer = document.getElementById('camera-container');
+const videoFeed = document.getElementById('camera-feed');
+const canvas = document.getElementById('camera-canvas');
+const captureBtn = document.getElementById('capture-btn');
+const closeCameraBtn = document.getElementById('close-camera-btn');
+const rtResult = document.getElementById('rt-result');
+const rtShape = document.getElementById('rt-shape');
+const rtConf = document.getElementById('rt-conf');
+
+let stream = null;
+let pollInterval = null;
+
+// Start Camera
+if (cameraBtn) {
+    cameraBtn.addEventListener('click', async () => {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "user" }
+            });
+            videoFeed.srcObject = stream;
+            cameraContainer.classList.remove('hidden');
+
+            // Start Polling 
+            startPolling();
+
+        } catch (err) {
+            alert("Error accessing camera: " + err);
+        }
+    });
+}
+
+// Polling Loop
+function startPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    rtResult.classList.remove('hidden');
+    rtShape.innerText = "Initializing...";
+    rtConf.innerText = "";
+
+    pollInterval = setInterval(async () => {
+        if (!stream) return;
+
+        // Capture Frame
+        canvas.width = videoFeed.videoWidth;
+        canvas.height = videoFeed.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoFeed, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(blob => {
+            if (!blob) return;
+            const file = new File([blob], "rt_frame.jpg", { type: "image/jpeg" });
+            analyzeFrame(file);
+        }, 'image/jpeg', 0.8); // 0.8 quality for speed
+
+    }, 800); // Every 800ms (~1.25 FPS)
+}
+
+async function analyzeFrame(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const gender = document.querySelector('input[name="gender"]:checked').value;
+    formData.append('gender', gender);
+
+    try {
+        const response = await fetch('/analyze', { method: 'POST', body: formData });
+        const data = await response.json();
+
+        if (response.ok) {
+            rtShape.innerText = data.predicted_shape;
+            rtConf.innerText = `${Math.round(data.confidence_score * 100)}%`;
+            rtShape.style.color = "#03dac6"; // Success color
+        } else {
+            // Silent fail or "No Face"
+            if (data.error === "No face detected" || response.status === 400) {
+                rtShape.innerText = "No Face Found";
+                rtShape.style.color = "#ff453a"; // Error color
+                rtConf.innerText = "";
+            } else {
+                rtShape.innerText = "Scanning...";
+                rtShape.style.color = "#fff";
+            }
+        }
+    } catch (e) {
+        // console.log("Frame drop");
+    }
+}
+
+// Close Camera
+function stopCamera() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+    if (pollInterval) clearInterval(pollInterval);
+    cameraContainer.classList.add('hidden');
+    rtResult.classList.add('hidden');
+}
+
+if (closeCameraBtn) {
+    closeCameraBtn.addEventListener('click', stopCamera);
+}
+
+// Capture Photo (Final Report)
+if (captureBtn) {
+    captureBtn.addEventListener('click', () => {
+        if (!stream) return;
+
+        // One last high-quality capture
+        canvas.width = videoFeed.videoWidth;
+        canvas.height = videoFeed.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoFeed, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(blob => {
+            const file = new File([blob], "webcam-capture.jpg", { type: "image/jpeg" });
+            stopCamera();
+
+            // Show Preview & Full Analysis
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                document.querySelector('.upload-section').style.display = 'none';
+                previewSection.style.display = 'block';
+                uploadAndAnalyze(file);
+            };
+            reader.readAsDataURL(file);
+        }, 'image/jpeg', 1.0);
     });
 }

@@ -1,0 +1,40 @@
+
+--- Testing User Uploads (11) ---
+Image: uploaded_image_0_1765654553187.jpg
+  Final Decision: Square (Conf: 71.1%)
+  CNN: Square (0.6778)
+  Geom: Round
+  Metrics: FWHR=0.94, JFR=0.89, Angle=132.1
+  -> Triggered HIGH CONFIDENCE CNN Override (0.90/0.10)
+Image: uploaded_image_0_1765658616338.jpg
+  Final Decision: Square (Conf: 71.1%)
+  CNN: Square (0.6778)
+  Geom: Round
+  Metrics: FWHR=0.94, JFR=0.89, Angle=132.1
+  -> Triggered HIGH CONFIDENCE CNN Override (0.90/0.10)
+Image: uploaded_image_1765654339387.jpg
+  Final Decision: Square (Conf: 59.3%)
+  CNN: Square (0.6006)
+  Geom: Round
+  Metrics: FWHR=0.86, JFR=0.91, Angle=135.1
+  -> Used LOW CONFIDENCE Mix (0.75/0.25)
+Image: uploaded_image_1_1765658616338.jpg
+  Final Decision: Square (Conf: 72.1%)
+  CNN: Square (0.6931)
+  Geom: Round
+  Metrics: FWHR=0.86, JFR=0.91, Angle=135.2
+  -> Triggered HIGH CONFIDENCE CNN Override (0.90/0.10)
+Image: uploaded_image_0_1765628022578.png
+  Error: No face detected
+Image: uploaded_image_0_1765649631308.png
+  Error: No face detected
+Image: uploaded_image_1765653895152.png
+  Error: No face detected
+Image: uploaded_image_1765654683485.png
+  Error: No face detected
+Image: uploaded_image_1_1765628022578.png
+  Error: No face detected
+Image: uploaded_image_1_1765649631308.png
+  Error: No face detected
+Image: uploaded_image_1_1765654553187.png
+  Error: No face detected

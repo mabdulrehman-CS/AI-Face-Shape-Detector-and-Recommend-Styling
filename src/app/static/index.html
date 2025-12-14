@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -25,6 +27,13 @@
             </section>
 
             <section class="upload-section">
+                <div class="model-selector">
+                    <label for="model-select">Active AI Model:</label>
+                    <select id="model-select">
+                        <option value="" disabled selected>Loading models...</option>
+                    </select>
+                </div>
+
                 <div class="upload-box" id="drop-zone">
                     <div class="icon-upload">📁</div>
                     <h3>Drag & Drop or Click to Upload</h3>
@@ -63,15 +72,55 @@
                         <ul id="glasses-list"></ul>
                     </div>
                 </div>
-                
+
                 <div class="alert-box" id="avoid-box">
                     <strong>Avoid:</strong> <span id="avoid-text"></span>
                 </div>
-                
+
+                <div class="alert-box" id="avoid-box">
+                    <strong>Avoid:</strong> <span id="avoid-text"></span>
+                </div>
+
                 <button class="btn-reset" onclick="resetApp()">Analyze Another</button>
+            </section>
+
+            <!-- Metrics Section -->
+            <section class="metrics-section" id="metrics-section" style="display: none; margin-top: 50px;">
+                <h2>⚠️ Model Performance</h2>
+                <p class="metrics-subtitle">Stats for <span id="metrics-model-name">...</span></p>
+
+                <div class="metrics-grid">
+                    <div class="metrics-card">
+                        <h3>Accuracy</h3>
+                        <div class="big-number" id="metric-acc">--%</div>
+                        <div class="sub-metric">F1 Score: <span id="metric-f1">--</span></div>
+                    </div>
+
+                    <div class="metrics-card table-card">
+                        <h3>Detailed Report</h3>
+                        <table id="metrics-table">
+                            <thead>
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                    <th>F1</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="metrics-card matrix-card">
+                    <h3>Confusion Matrix</h3>
+                    <div id="confusion-matrix"></div>
+                    <div class="matrix-legend"> Rows: Actual | Cols: Predicted </div>
+                </div>
             </section>
         </main>
     </div>
     <script src="/static/script.js"></script>
 </body>
+
 </html>

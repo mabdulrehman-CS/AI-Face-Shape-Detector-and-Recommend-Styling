@@ -15,17 +15,24 @@ def evaluate_system():
     print("Initializing Evaluation...")
     
     model_path = os.path.join(os.getcwd(), 'models', 'final_model.keras')
-    best_fine_v2 = os.path.join(os.getcwd(), 'models', 'checkpoints', 'best_fine_v2.keras')
-    best_fine = os.path.join(os.getcwd(), 'models', 'checkpoints', 'best_fine.keras')
     
-    if os.path.exists(best_fine_v2):
-        print(f"Evaluating Latest Fine-Tuned Model (v2): {best_fine_v2}")
-        model_path = best_fine_v2
-    elif os.path.exists(best_fine):
-        print(f"Evaluating Fine-Tuned Model (v1): {best_fine}")
-        model_path = best_fine
+    # Allow CLI override
+    if len(sys.argv) > 1:
+        model_path = sys.argv[1]
+        print(f"Overriding model path: {model_path}")
     else:
-        print(f"Evaluating Base Model: {model_path}")
+        # Default auto-selection logic
+        best_fine_v2 = os.path.join(os.getcwd(), 'models', 'checkpoints', 'best_fine_v2.keras')
+        best_fine = os.path.join(os.getcwd(), 'models', 'checkpoints', 'best_fine.keras')
+        
+        if os.path.exists(best_fine_v2):
+            print(f"Evaluating Latest Fine-Tuned Model (v2): {best_fine_v2}")
+            model_path = best_fine_v2
+        elif os.path.exists(best_fine):
+            print(f"Evaluating Fine-Tuned Model (v1): {best_fine}")
+            model_path = best_fine
+        else:
+            print(f"Evaluating Base Model: {model_path}")
         
     rules_path = os.path.join(os.getcwd(), 'src', 'recommendation', 'rules.json')
     test_dir = os.path.join(os.getcwd(), 'data', 'splits', 'test')
@@ -51,6 +58,22 @@ def evaluate_system():
         cls_dir = os.path.join(test_dir, cls)
         images = glob(os.path.join(cls_dir, '*.*')) # All images
         
+        # Limit to 200 to balance evaluation as requested
+        MAX_SAMPLES = 200
+        if len(images) > MAX_SAMPLES:
+            # Sort to ensure reproducibility, or prioritize original data if needed
+            # For now, just taking the first 200 sorted files (which usually groups datasets)
+            images.sort()
+            # Prioritize 'nl_' (user data) if mixed?
+            # actually sorted will put 'celeba' (c) before 'nl' (n).
+            # The user asked for "200 sets", likely implying the balanced set. 
+            # Let's shuffle deterministically to get a mix or just take top 200.
+            # Shuffling is better to get a representation of both if mixed.
+            import random
+            random.seed(42)
+            random.shuffle(images)
+            images = images[:MAX_SAMPLES]
+            
         print(f"Evaluating {cls} ({len(images)} images)...")
         
         for img_path in tqdm(images):

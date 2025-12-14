@@ -27,19 +27,25 @@ class RecommendationEngine:
             
         with open(rules_path, 'r', encoding="utf-8") as f:
             self.rules = json.load(f)
-        self.extractor = FaceLandmarkExtractor()
+        # Lower confidence to catch difficult faces (webcam, bad lighting)
+        self.extractor = FaceLandmarkExtractor(min_detection_confidence=0.3)
         # Class names must match training order. 
         # Usually from alphabetical order of directories: Heart, Oblong, Oval, Round, Square
         self.class_names = sorted(list(self.rules.keys())) 
 
-    def predict(self, image_path):
+    def predict(self, image_path, gender="Male"):
+        print(f"DEBUG: Predicting for {image_path}, Gender: {gender}")
         img = cv2.imread(image_path)
         if img is None:
+            print("ERROR: Image not found or could not be read by CV2")
             return {"error": "Image not found"}
+        
+        print(f"DEBUG: Image loaded. Shape: {img.shape}")
         
         # 1. Geometry Pipeline
         lms_norm = self.extractor.process_image(img)
         if lms_norm is None:
+            print("ERROR: No face detected by MediaPipe")
             return {"error": "No face detected"}
             
         lms_pixel = self.extractor.get_landmarks_pixel(lms_norm, img.shape)
@@ -49,9 +55,8 @@ class RecommendationEngine:
         # Re-extract for metrics
         lms_norm_aligned = self.extractor.process_image(img_aligned)
         if lms_norm_aligned is None:
-             # Fallback to original landmarks rotated? complicated.
-             # Just proceed with original metrics if align fails (rare)
-             metrics = get_face_metrics(lms_pixel) # approximation
+             # Fallback to original metrics
+             metrics = get_face_metrics(lms_pixel) 
         else:
             lms_pixel_aligned = self.extractor.get_landmarks_pixel(lms_norm_aligned, img_aligned.shape)
             metrics = get_face_metrics(lms_pixel_aligned)
@@ -85,69 +90,43 @@ class RecommendationEngine:
         cnn_class = self.class_names[cnn_class_idx]
         cnn_conf = float(np.max(preds))
         
-        # 3. Voting Logic (Debug Prints)
-        print("\n--- Inference Debug ---")
-        print(f"CNN Prediction: {cnn_class} ({cnn_conf:.4f})")
-        print(f"Geometry Prediction: {geom_class}")
+        # 3. Voting Logic
+        # ... (Weights logic remains same or can be simplified inline, but I'll preserve exact logic structure)
+        # To avoid massive replacement, I will trust the conflict resolution logic below which I will include 
+        # But wait, I must replace the whole block because I am replacing from Top of function.
         
-        # Tuning: Dynamic Weighting (Smart Gating)
-        # If the Brain (CNN) is very sure (>75%), repeat its confidence and ignore the Ruler (which struggles with angles).
-        # If the Brain is unsure, ask the Ruler for help.
+        # --- Conflict Resolution Logic ---
+        cnn_weight = 0.60
+        geom_weight = 0.40
         
-        # Context-Aware Weighting (The "Nuance" Fix)
+        # Context-Aware Weighting
         if cnn_conf > 0.80:
-            print(">> High Confidence Mode: Trusting CNN")
             cnn_weight = 0.90
             geom_weight = 0.10
         elif cnn_class == "Square" and geom_class == "Round":
-            # The AI sees "Square", Ruler sees "Round".
-            # This accounts for 40% of our errors (Soft-Jawed Squares).
-            # If the angle is < 140, it's likely a "Soft Square" -> Trust AI.
-            # If the angle is > 140, it's truly Round -> Trust Ruler.
-            
             angle = metrics['jaw_angle']
             if angle < 140:
-                 print(f">> Conflict Mode (Soft Square, Angle={angle:.1f}): Trusting CNN")
                  cnn_weight = 0.80
                  geom_weight = 0.20
             else:
-                 print(f">> Conflict Mode (True Round, Angle={angle:.1f}): Trusting Jaw Angle")
                  cnn_weight = 0.40
                  geom_weight = 0.60
         elif cnn_class == "Heart" and geom_class in ["Square", "Round"]:
-            print(">> Conflict Mode (Heart vs Wide): Trusting AI for Chin Shape")
-            # Ruler sees wide forehead/jaw and thinks Square/Round.
-            # AI detects the Pointy Chin. Trust AI.
             cnn_weight = 0.80
             geom_weight = 0.20
         elif cnn_class == "Oval" and geom_class == "Round":
-            print(f">> Conflict Mode (Oval vs Round): Trusting AI Perception")
-            # Ruler sees width (ratio > 0.8), but AI sees the Oval contour.
-            # 30% of Ovals are misclassified as Round by Ruler.
             cnn_weight = 0.75
             geom_weight = 0.25
-            
         elif cnn_class == "Heart" and geom_class == "Oval":
-             print(f">> Conflict Mode (Heart vs Oval): Trusting AI for Chin")
-             # Ruler sees length, thinks Oval. AI sees wide forehead/pointy chin.
              cnn_weight = 0.80
              geom_weight = 0.20
-
         elif cnn_class == "Oblong" and geom_class == "Oval":
-             print(f">> Conflict Mode (Oblong vs Oval): Trusting AI for Length")
-             # Both are long. Oblong is usually longer/boxier. 
              cnn_weight = 0.75
              geom_weight = 0.25
-
         elif cnn_class in ["Oval", "Oblong"] and geom_class == "Round":
-            print(">> Nuance Mode: Trusting AI Features")
             cnn_weight = 0.75
             geom_weight = 0.25
-        else:
-            print(">> Standard Mode: Balanced")
-            cnn_weight = 0.60
-            geom_weight = 0.40
-        
+
         votes = {name: 0.0 for name in self.class_names}
         
         # Add CNN votes
@@ -158,38 +137,69 @@ class RecommendationEngine:
         if geom_class in votes:
             votes[geom_class] += geom_weight
             
-        # Initial Winner determination
+        # Initial Winner
         initial_winner = max(votes, key=votes.get)
         
-        # CONFIDENCE BOOSTING:
-        # If the vote is split (e.g. 47% vs 40%), it looks "unsure" to the user.
-        # We verify the winner and give it a "consensus bonus" to separate it from the runner-up.
-        # This acts like a softmax temperature sharpening.
+        # Consensus Bonus
         votes[initial_winner] += 0.35 
         
-        # Normalize scores to percentages (sum to 1.0)
+        # Normalize
         total_votes = sum(votes.values())
         if total_votes > 0:
             for k in votes:
                 votes[k] /= total_votes
         
-        print("Votes Breakdown (Sharpened):", {k: f"{v:.1%}" for k, v in votes.items()})
-        
-        final_class = max(votes, key=votes.get) # Should be same as initial_winner
+        final_class = max(votes, key=votes.get)
         final_conf = votes[final_class]
-        
-        print(f"Final Decision: {final_class} ({final_conf:.1%})")
-        print("-----------------------\n")
         
         result = {
             "predicted_shape": final_class,
             "confidence_score": final_conf,
             "cnn_prediction": {"class": cnn_class, "confidence": cnn_conf},
             "geometry_prediction": {"class": geom_class, "metrics": metrics},
-            "recommendations": self.rules.get(final_class, {})
+            "recommendations": self.get_recommendations(final_class, gender)
         }
         
         return result
+
+    def get_recommendations(self, shape, gender="Male"):
+        # Get raw rules for the shape
+        raw_rules = self.rules.get(shape, {})
+        
+        # Create a clean dictionary for the response
+        rec = {
+            "description": raw_rules.get("description", ""),
+            "glasses": raw_rules.get("glasses", [])
+        }
+        
+        # Gender-Specific Hairstyle Selection
+        # Rules now have "hairstyles": {"male": [], "female": []}
+        all_hairstyles = raw_rules.get("hairstyles", {})
+        if isinstance(all_hairstyles, dict):
+            # New structure
+            rec["hairstyles"] = all_hairstyles.get(gender.lower(), [])
+        else:
+            # Fallback for old structure (list)
+            rec["hairstyles"] = all_hairstyles
+            
+        # Gender-Specific Avoid Advice
+        all_avoids = raw_rules.get("avoid", {})
+        if isinstance(all_avoids, dict):
+             rec["avoid"] = all_avoids.get(gender.lower(), "")
+        else:
+             rec["avoid"] = all_avoids
+             
+        # Feature Filtering
+        if gender == "Female":
+            # Females get Makeup, No Beards
+            rec["beards"] = [] # Clear beards
+            rec["makeup"] = raw_rules.get("makeup", [])
+        else:
+            # Males get Beards, No Makeup
+            rec["beards"] = raw_rules.get("beards", [])
+            # No makeup key for men
+            
+        return rec
 
 if __name__ == "__main__":
     # Test

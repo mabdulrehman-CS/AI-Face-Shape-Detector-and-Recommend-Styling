@@ -386,3 +386,315 @@ nav a:hover {
     color: var(--text-muted);
     margin-top: 10px;
 }
+
+/* ================= Gender & Controls ================= */
+.control-group {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.control-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.gender-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.gender-toggle input[type="radio"] {
+    display: none;
+}
+
+.toggle-btn {
+    padding: 12px 25px;
+    background: #1e1e1e;
+    border-radius: 8px;
+    /* Boxy */
+    cursor: pointer;
+    border: 1px solid #333;
+    transition: all 0.2s ease;
+    color: #aaa;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+}
+
+.toggle-btn:hover {
+    background: #2a2a2a;
+    border-color: #555;
+    color: #fff;
+}
+
+.gender-toggle input[type="radio"]:checked+.toggle-btn {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.2);
+    transform: translateY(-1px);
+}
+
+.model-dropdown {
+    padding: 12px 20px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    outline: none;
+    min-width: 250px;
+    /* Match the sketch 'long box' */
+    transition: all 0.2s ease;
+}
+
+.model-dropdown:hover,
+.model-dropdown:focus {
+    border-color: var(--primary);
+    background: #2a2a2a;
+}
+
+
+
+/* ================= Layout Fixes ================= */
+.upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.controls-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 50px;
+    /* Strong vertical separation as requested */
+    flex-wrap: wrap;
+    /* responsive */
+    align-items: flex-end;
+    /* align label+input bottoms */
+}
+
+.control-group {
+    margin-bottom: 0px;
+    /* Reset margin since we use gap */
+}
+
+/* ================= Input Methods (Dual Card) ================= */
+.input-methods {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.input-card {
+    flex: 1;
+    min-width: 200px;
+    /* Don't squash too small */
+    max-width: 300px;
+    border: 2px dashed #444;
+    padding: 30px 20px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-card:hover {
+    border-color: var(--primary);
+    background: rgba(187, 134, 252, 0.05);
+    transform: translateY(-5px);
+}
+
+.input-card .icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+}
+
+.input-card h3 {
+    margin: 5px 0;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.input-card p {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Specific Style for Camera Card to look clickable but solid if desired, 
+   or keep dashed to match consistency? Dashed is fine for "Input Action". 
+   Maybe solid border for Camera to differentiate? */
+.camera-card {
+    border-style: solid;
+    border-color: #333;
+}
+
+.camera-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(187, 134, 252, 0.2);
+}
+
+.input-separator {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: #444;
+    font-size: 14px;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+    .input-methods {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .input-separator {
+        transform: rotate(90deg);
+        /* Or just hidden */
+        display: none;
+    }
+}
+
+
+/* ================= Camera Overlay ================= */
+.camera-container {
+    position: relative;
+    /* Anchor for overlay */
+}
+
+.camera-overlay {
+    position: absolute;
+    top: 55px;
+    /* Adjust for video margin/padding if any, or 0 */
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Matches video height approx */
+    pointer-events: none;
+    /* Let clicks pass to video/buttons */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 80px;
+    /* Above buttons */
+}
+
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 10%;
+    width: 80%;
+    height: 2px;
+    background: var(--primary);
+    box-shadow: 0 0 10px var(--primary);
+    animation: scan 3s infinite linear;
+    opacity: 0.7;
+}
+
+@keyframes scan {
+    0% {
+        top: 10%;
+    }
+
+    50% {
+        top: 90%;
+    }
+
+    100% {
+        top: 10%;
+    }
+}
+
+.rt-result {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--primary);
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s;
+}
+
+.rt-result.hidden {
+    opacity: 0;
+}
+
+/* ================= Camera Interface (Existing) ================= */
+.camera-control {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* ... rest of camera CSS */
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid #555;
+    color: #ccc;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.secondary-btn:hover {
+    border-color: var(--primary);
+    color: white;
+}
+
+.camera-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    background: #121212;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    border: 1px solid #333;
+    text-align: center;
+    /* Hidden logic handled by JS class toggle */
+}
+
+.camera-container.hidden {
+    display: none;
+}
+
+#camera-feed {
+    width: 100%;
+    border-radius: 12px;
+    background: #000;
+    transform: scaleX(-1);
+    /* Mirror effect */
+}
+
+.camera-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}

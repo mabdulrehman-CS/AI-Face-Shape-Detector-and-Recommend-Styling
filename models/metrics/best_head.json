@@ -1,6 +1,6 @@
 {
     "model_name": "Head Model (Stage 1)",
-    "accuracy": 0.4850,
+    "accuracy": 0.4482,
     "f1_score": 0.45,
     "classes": [
         "Heart",
@@ -11,71 +11,71 @@
     ],
     "classification_report": {
         "Heart": {
-            "precision": 0.50,
-            "recall": 0.40,
-            "f1-score": 0.44,
+            "precision": 0.63,
+            "recall": 0.28,
+            "f1-score": 0.39,
             "support": 150
         },
         "Oblong": {
-            "precision": 0.45,
-            "recall": 0.50,
-            "f1-score": 0.47,
+            "precision": 0.82,
+            "recall": 0.24,
+            "f1-score": 0.37,
             "support": 189
         },
         "Oval": {
-            "precision": 0.40,
-            "recall": 0.30,
-            "f1-score": 0.34,
+            "precision": 0.50,
+            "recall": 0.03,
+            "f1-score": 0.06,
             "support": 150
         },
         "Round": {
-            "precision": 0.30,
-            "recall": 0.85,
-            "f1-score": 0.44,
+            "precision": 0.26,
+            "recall": 0.88,
+            "f1-score": 0.41,
             "support": 150
         },
         "Square": {
-            "precision": 0.65,
-            "recall": 0.35,
-            "f1-score": 0.45,
-            "support": 653
+            "precision": 0.73,
+            "recall": 0.76,
+            "f1-score": 0.75,
+            "support": 200
         }
     },
     "confusion_matrix": [
         [
-            60,
-            20,
-            20,
-            40,
-            10
+            42,
+            6,
+            2,
+            91,
+            9
         ],
         [
-            25,
-            95,
-            25,
-            30,
-            14
-        ],
-        [
-            20,
-            25,
+            13,
             45,
-            55,
-            5
+            2,
+            109,
+            20
         ],
         [
-            10,
+            8,
+            0,
             5,
-            5,
-            128,
-            2
+            125,
+            12
         ],
         [
-            30,
-            50,
-            20,
-            300,
-            253
+            2,
+            0,
+            1,
+            132,
+            15
+        ],
+        [
+            2,
+            4,
+            0,
+            42,
+            152
         ]
     ]
 }

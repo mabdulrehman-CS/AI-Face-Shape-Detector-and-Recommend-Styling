@@ -24,23 +24,73 @@
             <section class="hero">
                 <h1>Unlock Your Perfect Look</h1>
                 <p>AI-Powered Face Shape Analysis & Grooming Recommendations</p>
+                <h2>Analyze Your Face Shape</h2>
             </section>
 
             <section class="upload-section">
-                <div class="model-selector">
-                    <label for="model-select">Active AI Model:</label>
-                    <select id="model-select">
-                        <option value="" disabled selected>Loading models...</option>
-                    </select>
+                <!-- 1. Configuration (Gender + Model) -->
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label class="control-label">Gender</label>
+                        <div class="gender-toggle">
+                            <input type="radio" id="male" name="gender" value="Male" checked>
+                            <label for="male" class="toggle-btn">Male</label>
+
+                            <input type="radio" id="female" name="gender" value="Female">
+                            <label for="female" class="toggle-btn">Female</label>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="model-select" class="control-label">AI Model</label>
+                        <select id="model-select" class="model-dropdown">
+                            <option value="loading">Loading models...</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="upload-box" id="drop-zone">
-                    <div class="icon-upload">📁</div>
-                    <h3>Drag & Drop or Click to Upload</h3>
-                    <p>Supports JPG, PNG</p>
-                    <input type="file" id="file-input" hidden accept="image/*">
+                <!-- 2. Input Methods (Dual Columns) -->
+                <div class="input-methods">
+                    <!-- Option A: File Upload -->
+                    <div class="input-card" id="drop-zone">
+                        <div class="icon">📂</div>
+                        <h3>Upload Photo</h3>
+                        <p>Drag & Drop or Click</p>
+                        <input type="file" id="file-input" hidden accept="image/*">
+                    </div>
+
+                    <div class="input-separator">
+                        <span>OR</span>
+                    </div>
+
+                    <!-- Option B: Webcam -->
+                    <div class="input-card camera-card" id="start-camera-btn">
+                        <div class="icon">📷</div>
+                        <h3>Use Camera</h3>
+                        <p>Take a Selfie</p>
+                    </div>
                 </div>
             </section>
+
+            <!-- Camera Modal/Overse -->
+            <div id="camera-container" class="camera-container hidden">
+                <video id="camera-feed" autoplay playsinline></video>
+                <canvas id="camera-canvas" hidden></canvas>
+
+                <!-- Real-Time Overlay -->
+                <div class="camera-overlay">
+                    <div class="scan-line"></div>
+                    <div id="rt-result" class="rt-result hidden">
+                        <span id="rt-shape">Scanning...</span>
+                        <span id="rt-conf"></span>
+                    </div>
+                </div>
+
+                <div class="camera-actions">
+                    <button id="capture-btn" class="primary-btn">Capture & Report</button>
+                    <button id="close-camera-btn" class="secondary-btn">Close</button>
+                </div>
+            </div>
 
             <section class="preview-section" id="preview-section" style="display: none;">
                 <div class="image-wrapper">

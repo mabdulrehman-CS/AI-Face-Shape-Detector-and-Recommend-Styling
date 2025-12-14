@@ -57,7 +57,10 @@ def train(epochs_head=10, epochs_fine=50, resume=False):
     loss_fn = get_focal_loss()
     
     model_path = os.path.join(os.getcwd(), 'models', 'final_model.keras')
-    best_fine_path = os.path.join(checkpoint_dir, 'best_fine.keras')
+    model_path = os.path.join(os.getcwd(), 'models', 'final_model.keras')
+    # Use v2 to avoid file lock conflict with running app (which holds v1)
+    best_fine_path = os.path.join(checkpoint_dir, 'best_fine_v2.keras')
+    old_fine_path = os.path.join(checkpoint_dir, 'best_fine.keras')
     best_head_path = os.path.join(checkpoint_dir, 'best_head.keras')
     
     model = None
@@ -68,8 +71,11 @@ def train(epochs_head=10, epochs_fine=50, resume=False):
             print(f"Resuming from final model: {model_path}")
             model = tf.keras.models.load_model(model_path, custom_objects={'focal_loss': loss_fn})
         elif os.path.exists(best_fine_path):
-            print(f"Resuming from best fine-tuned checkpoint: {best_fine_path}")
+            print(f"Resuming from best fine-tuned checkpoint (v2): {best_fine_path}")
             model = tf.keras.models.load_model(best_fine_path, custom_objects={'focal_loss': loss_fn})
+        elif os.path.exists(old_fine_path):
+            print(f"Resuming from previous fine-tuned checkpoint (v1): {old_fine_path}")
+            model = tf.keras.models.load_model(old_fine_path, custom_objects={'focal_loss': loss_fn})
         elif os.path.exists(best_head_path):
             print(f"Resuming from best head checkpoint: {best_head_path}")
             model = tf.keras.models.load_model(best_head_path, custom_objects={'focal_loss': loss_fn})

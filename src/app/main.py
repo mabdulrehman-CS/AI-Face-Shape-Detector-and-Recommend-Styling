@@ -38,32 +38,55 @@ app.mount("/static", StaticFiles(directory=os.path.join(current_dir, "static")),
 
 # Initialize Engine
 model_path = os.path.join(project_root, 'models', 'final_model.keras')
+best_fine_v2 = os.path.join(project_root, 'models', 'checkpoints', 'best_fine_v2.keras')
 best_fine = os.path.join(project_root, 'models', 'checkpoints', 'best_fine.keras')
 best_head = os.path.join(project_root, 'models', 'checkpoints', 'best_head.keras')
 
 # Logic to load best available model
+available_models = {
+    "Fine-Tuned v2 (Epoch 30 - Latest)": best_fine_v2,
+    "Fine-Tuned v1 (Epoch 20)": best_fine,
+    "Base Model (Initial)": model_path,
+    "Head Model (Stage 1)": best_head
+}
+
 active_model_path = None
-if os.path.exists(model_path):
-    active_model_path = model_path
+# Prioritize the Latest Fine-Tuned Checkpoint (v2)
+if os.path.exists(best_fine_v2):
+    active_model_path = best_fine_v2
+    print(f"Selecting Latest Fine-Tuned Model (v2): {best_fine_v2}")
 elif os.path.exists(best_fine):
     active_model_path = best_fine
+    print(f"Selecting Fine-Tuned Model (v1): {best_fine}")
 elif os.path.exists(best_head):
     active_model_path = best_head
+    print(f"Selecting Initial Head Model: {best_head}")
+elif os.path.exists(model_path):
+    active_model_path = model_path
+    print(f"Selecting Base Final Model: {model_path}")
 
 rules_path = os.path.join(project_root, 'src', 'recommendation', 'rules.json')
 
 engine = None
-if active_model_path and os.path.exists(active_model_path):
-    print(f"Loading model from {active_model_path}")
-    try:
-        engine = RecommendationEngine(active_model_path, rules_path)
-        print("Model Loaded Successfully")
-    except Exception as e:
-        print(f"Error loading model: {e}")
-        import traceback
-        traceback.print_exc()
-else:
-    print("No model found. Inference will fail.")
+def load_engine(path):
+    global engine
+    if path and os.path.exists(path):
+        print(f"Loading model from {path}")
+        try:
+            engine = RecommendationEngine(path, rules_path)
+            print("Model Loaded Successfully")
+            return True
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    else:
+        print(f"Model path not found: {path}")
+        return False
+
+# Initial Load
+load_engine(active_model_path)
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
@@ -72,6 +95,63 @@ async def read_root():
             return f.read()
     except Exception as e:
         return f"Error loading index.html: {e}"
+
+@app.get("/models")
+async def get_models():
+    # Return list of models that actually exist
+    models = []
+    current_model_name = "Unknown"
+    
+    for name, path in available_models.items():
+        if os.path.exists(path):
+            models.append({"name": name, "id": name})
+            if engine and engine.model_path == path: 
+                 current_model_name = name
+                 
+    return JSONResponse(content={"models": models, "active": current_model_name})
+
+@app.get("/model_metrics")
+async def get_metrics(model_id: str):
+    # Mapping for metrics
+    metrics_map = {
+        "Fine-Tuned v2 (Epoch 30 - Latest)": "best_fine_v2.json",
+        "Fine-Tuned v1 (Epoch 20)": "best_fine.json",
+        "Base Model (Initial)": "final_model.json",
+        "Head Model (Stage 1)": "best_head.json"
+    }
+    
+    filename = metrics_map.get(model_id)
+    if not filename:
+        return JSONResponse(status_code=404, content={"error": "Metrics not found for this model"})
+        
+    metrics_path = os.path.join(project_root, 'models', 'metrics', filename)
+    
+    if os.path.exists(metrics_path):
+        import json
+        with open(metrics_path, 'r') as f:
+            data = json.load(f)
+        return JSONResponse(content=data)
+    else:
+        return JSONResponse(status_code=404, content={"error": "Metrics file not found"})
+
+from pydantic import BaseModel
+class ModelSwitchRequest(BaseModel):
+    model_id: str
+
+@app.post("/switch_model")
+async def switch_model(request: ModelSwitchRequest):
+    target_path = available_models.get(request.model_id)
+    if not target_path:
+        return JSONResponse(status_code=400, content={"error": "Invalid model ID"})
+    
+    if not os.path.exists(target_path):
+        return JSONResponse(status_code=404, content={"error": "Model file not found"})
+        
+    success = load_engine(target_path)
+    if success:
+        return JSONResponse(content={"status": "success", "message": f"Switched to {request.model_id}"})
+    else:
+        return JSONResponse(status_code=500, content={"error": "Failed to load model"})
 
 @app.post("/analyze")
 async def analyze_face(file: UploadFile = File(...)):

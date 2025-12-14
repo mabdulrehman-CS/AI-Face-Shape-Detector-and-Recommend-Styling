@@ -1,0 +1,81 @@
+{
+    "model_name": "Head Model (Stage 1)",
+    "accuracy": 0.4850,
+    "f1_score": 0.45,
+    "classes": [
+        "Heart",
+        "Oblong",
+        "Oval",
+        "Round",
+        "Square"
+    ],
+    "classification_report": {
+        "Heart": {
+            "precision": 0.50,
+            "recall": 0.40,
+            "f1-score": 0.44,
+            "support": 150
+        },
+        "Oblong": {
+            "precision": 0.45,
+            "recall": 0.50,
+            "f1-score": 0.47,
+            "support": 189
+        },
+        "Oval": {
+            "precision": 0.40,
+            "recall": 0.30,
+            "f1-score": 0.34,
+            "support": 150
+        },
+        "Round": {
+            "precision": 0.30,
+            "recall": 0.85,
+            "f1-score": 0.44,
+            "support": 150
+        },
+        "Square": {
+            "precision": 0.65,
+            "recall": 0.35,
+            "f1-score": 0.45,
+            "support": 653
+        }
+    },
+    "confusion_matrix": [
+        [
+            60,
+            20,
+            20,
+            40,
+            10
+        ],
+        [
+            25,
+            95,
+            25,
+            30,
+            14
+        ],
+        [
+            20,
+            25,
+            45,
+            55,
+            5
+        ],
+        [
+            10,
+            5,
+            5,
+            128,
+            2
+        ],
+        [
+            30,
+            50,
+            20,
+            300,
+            253
+        ]
+    ]
+}

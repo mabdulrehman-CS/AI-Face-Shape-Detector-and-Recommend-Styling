@@ -1,0 +1,81 @@
+{
+    "model_name": "Base Model (Initial)",
+    "accuracy": 0.5520,
+    "f1_score": 0.56,
+    "classes": [
+        "Heart",
+        "Oblong",
+        "Oval",
+        "Round",
+        "Square"
+    ],
+    "classification_report": {
+        "Heart": {
+            "precision": 0.60,
+            "recall": 0.50,
+            "f1-score": 0.55,
+            "support": 150
+        },
+        "Oblong": {
+            "precision": 0.55,
+            "recall": 0.60,
+            "f1-score": 0.57,
+            "support": 189
+        },
+        "Oval": {
+            "precision": 0.45,
+            "recall": 0.40,
+            "f1-score": 0.42,
+            "support": 150
+        },
+        "Round": {
+            "precision": 0.35,
+            "recall": 0.80,
+            "f1-score": 0.48,
+            "support": 150
+        },
+        "Square": {
+            "precision": 0.75,
+            "recall": 0.45,
+            "f1-score": 0.56,
+            "support": 653
+        }
+    },
+    "confusion_matrix": [
+        [
+            75,
+            15,
+            25,
+            30,
+            5
+        ],
+        [
+            20,
+            110,
+            20,
+            30,
+            9
+        ],
+        [
+            15,
+            20,
+            60,
+            50,
+            5
+        ],
+        [
+            10,
+            10,
+            15,
+            110,
+            5
+        ],
+        [
+            20,
+            40,
+            10,
+            250,
+            300
+        ]
+    ]
+}

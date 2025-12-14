@@ -1,0 +1,81 @@
+{
+    "model_name": "Fine-Tuned v2 (Epoch 30)",
+    "accuracy": 0.7709,
+    "f1_score": 0.78,
+    "classes": [
+        "Heart",
+        "Oblong",
+        "Oval",
+        "Round",
+        "Square"
+    ],
+    "classification_report": {
+        "Heart": {
+            "precision": 0.85,
+            "recall": 0.63,
+            "f1-score": 0.72,
+            "support": 150
+        },
+        "Oblong": {
+            "precision": 0.78,
+            "recall": 0.74,
+            "f1-score": 0.76,
+            "support": 189
+        },
+        "Oval": {
+            "precision": 0.66,
+            "recall": 0.54,
+            "f1-score": 0.60,
+            "support": 150
+        },
+        "Round": {
+            "precision": 0.44,
+            "recall": 0.91,
+            "f1-score": 0.59,
+            "support": 150
+        },
+        "Square": {
+            "precision": 0.96,
+            "recall": 0.83,
+            "f1-score": 0.89,
+            "support": 653
+        }
+    },
+    "confusion_matrix": [
+        [
+            94,
+            6,
+            20,
+            26,
+            4
+        ],
+        [
+            5,
+            139,
+            13,
+            24,
+            8
+        ],
+        [
+            5,
+            10,
+            81,
+            46,
+            8
+        ],
+        [
+            2,
+            1,
+            6,
+            137,
+            4
+        ],
+        [
+            5,
+            22,
+            2,
+            79,
+            545
+        ]
+    ]
+}

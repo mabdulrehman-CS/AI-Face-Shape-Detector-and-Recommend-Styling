@@ -40,19 +40,19 @@ Here is the step-by-step journey of your image, explained simply:
 6.  **The Expert Advice**: Once the shape is decided (e.g., "Oval"), the system opens its Rulebook (`rules.json`) and picks the correct advice for your gender.
 7.  **The Delivery**: The result travels back to your browser and appears as a card.
 
-## 📖 Project File Dictionary (For the Curious)
+## 📖 Project File Dictionary 
 If you browse the files, here is what each one actually does in plain English:
 
-| File Name | Layman Explanation |
+| File Name | Explanation |
 | :--- | :--- |
-| `run_app.bat` | **The Starter Key**. Double-click this to start everything. |
-| `requirements.txt` | **The Shopping List**. Tells Python which tools (ingredients) to download. |
-| `src/app/main.py` | **The Traffic Controller**. It directs web traffic (your image) to the right place. |
-| `src/recommendation/engine.py` | **The Brain**. This is where the thinking happens. |
-| `src/recommendation/rules.json` | **The Textbook**. Contains all the grooming knowledge. |
-| `models/final_model.keras` | **The Memory**. The file where the AI stores what it learned from 7,000 photos. |
-| `src/app/static/index.html` | **The Skeleton**. The structure of the webpage you see. |
-| `src/app/static/style.css` | **The Paint**. Makes the website look dark and modern. |
+| `run_app.bat` | Double-click this to start everything. |
+| `requirements.txt` | Tells Python which tools (ingredients) to download. |
+| `src/app/main.py` | It directs web traffic (your image) to the right place. |
+| `src/recommendation/engine.py` | This is where the thinking happens. |
+| `src/recommendation/rules.json` | Contains all the grooming knowledge. |
+| `models/final_model.keras` | The file where the AI stores what it learned from 7,000 photos. |
+| `src/app/static/index.html` | The structure of the webpage you see. |
+| `src/app/static/style.css` | Makes the website look dark and modern. |
 
 ---
 

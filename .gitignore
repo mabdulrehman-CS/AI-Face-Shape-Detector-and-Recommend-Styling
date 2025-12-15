@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+venv/
+.env
+.DS_Store
+# Ignore large model files (>100MB)
+models/*.keras
+models/checkpoints/
+data/raw/
+data/processed/

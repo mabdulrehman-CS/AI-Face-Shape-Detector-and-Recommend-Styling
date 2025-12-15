@@ -6,3 +6,7 @@ pandas
 tqdm
 scikit-learn
 tensorflow
+
+fastapi
+uvicorn
+python-multipart

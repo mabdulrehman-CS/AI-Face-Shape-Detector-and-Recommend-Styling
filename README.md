@@ -29,11 +29,11 @@ Most people struggle to find a haircut or beard style that suits them. They ofte
 *   **The Problem**: "One size fits all" doesn't work for faces.
 *   **The Solution**: This AI acts as an objective, mathematical consultant. It tells you *why* a style works (e.g., "This beard hides your sharp jaw" or "This haircut balances your round face").
 
-## ⚙️ Under the Hood: What happens when you click "Analyze"?
+## ⚙️ What happens when you click "Analyze"?
 Here is the step-by-step journey of your image, explained simply:
 
 1.  **The Snapshot**: You click the camera button. The browser takes a digital photo.
-2.  **The Handover**: The photo travels from your browser to our Python Server (the "Kitchen").
+2.  **The Handover**: The photo travels from your browser to our Python Server.
 3.  **The Geometric Check**: First, **MediaPipe** maps 478 dots on the face. It measures simple things like "Is the face twice as long as it is wide?".
 4.  **The AI Intuition**: Simultaneously, the **Deep Learning Model** looks at the photo. It doesn't measure; it *feels*. It recognizes patterns it saw during training (like the curve of a jawline).
 5.  **The Council Vote**: The Geometry and the AI compare notes. If they disagree, a "Voting System" decides the winner based on confidence.
@@ -60,13 +60,13 @@ If you browse the files, here is what each one actually does in plain English:
 
 The AI was not just "trained once". We used a sophisticated **2-Stage Transfer Learning Strategy** to ensure maximum accuracy without destroying the pre-trained knowledge.
 
-### Stage 1: The "Hasty" Head Training (10 Epochs)
+### Stage 1: The Head Training (10 Epochs)
 *   **Goal**: Teach the model the *concept* of Face Shapes without confusing it.
 *   **Action**: We "Froze" the main brain (EfficientNetV2 backbone). We only trained the final "Head" (the decision layer).
 *   **Duration**: **10 Epochs**.
 *   **Result**: The model learned coarse differences (e.g., Round vs Square) but missed subtle details.
 
-### Stage 2: The "Fine-Tuning" Surgery (30+ Epochs)
+### Stage 2: The "Fine-Tuning" (30+ Epochs)
 *   **Goal**: Teach the model to see subtle human details (Jawlines, Cheekbones, etc).
 *   **Action**: We "Unfroze" the top 30% of the brain. We used a very low learning rate (`1e-5`) to gently nudge the weights.
 *   **Duration**: Tuned for **30 to 50 Epochs** with Early Stopping.
@@ -121,6 +121,3 @@ We have made it extremely simple. Just run:
 *   It will automatically open your browser to `http://localhost:8001`.
 
 ---
-
-**Developed for the User**.
-This documentation serves as the complete guide to the project.

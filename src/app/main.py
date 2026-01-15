@@ -38,23 +38,28 @@ app.mount("/static", StaticFiles(directory=os.path.join(current_dir, "static")),
 
 # Initialize Engine
 model_path = os.path.join(project_root, 'models', 'final_model.keras')
+best_fine_v3 = os.path.join(project_root, 'models', 'checkpoints', 'best_fine_v3.keras')
 best_fine_v2 = os.path.join(project_root, 'models', 'checkpoints', 'best_fine_v2.keras')
 best_fine = os.path.join(project_root, 'models', 'checkpoints', 'best_fine.keras')
 best_head = os.path.join(project_root, 'models', 'checkpoints', 'best_head.keras')
 
 # Logic to load best available model
 available_models = {
-    "Fine-Tuned v2 (Epoch 30 - Latest)": best_fine_v2,
+    "Fine-Tuned v3 (Epoch 40 - Best)": best_fine_v3,
+    "Fine-Tuned v2 (Epoch 30)": best_fine_v2,
     "Fine-Tuned v1 (Epoch 20)": best_fine,
     "Base Model (Initial)": model_path,
     "Head Model (Stage 1)": best_head
 }
 
 active_model_path = None
-# Prioritize the Latest Fine-Tuned Checkpoint (v2)
-if os.path.exists(best_fine_v2):
+# Prioritize the Latest Fine-Tuned Checkpoint (v3)
+if os.path.exists(best_fine_v3):
+    active_model_path = best_fine_v3
+    print(f"Selecting Latest Fine-Tuned Model (v3 - Best): {best_fine_v3}")
+elif os.path.exists(best_fine_v2):
     active_model_path = best_fine_v2
-    print(f"Selecting Latest Fine-Tuned Model (v2): {best_fine_v2}")
+    print(f"Selecting Fine-Tuned Model (v2): {best_fine_v2}")
 elif os.path.exists(best_fine):
     active_model_path = best_fine
     print(f"Selecting Fine-Tuned Model (v1): {best_fine}")
@@ -112,9 +117,10 @@ async def get_models():
 
 @app.get("/model_metrics")
 async def get_metrics(model_id: str):
-    # Mapping for metrics
+    # Mapping for metrics - must match available_models keys exactly
     metrics_map = {
-        "Fine-Tuned v2 (Epoch 30 - Latest)": "best_fine_v2.json",
+        "Fine-Tuned v3 (Epoch 40 - Best)": "best_fine_v3.json",
+        "Fine-Tuned v2 (Epoch 30)": "best_fine_v2.json",
         "Fine-Tuned v1 (Epoch 20)": "best_fine.json",
         "Base Model (Initial)": "final_model.json",
         "Head Model (Stage 1)": "best_head.json"

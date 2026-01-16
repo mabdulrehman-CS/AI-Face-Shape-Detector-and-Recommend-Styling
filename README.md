@@ -12,6 +12,8 @@ The system supports two distinct ways to analyze a face:
 2.  **File Upload**: Drag & drop high-resolution images.
     *   **Gender Selector**: You can specify **"Male"** or **"Female"** before analysis. This filters the results (e.g., showing Beards for men, Makeup for women).
 
+---
+
 ### 🔍 Analysis Outputs
 The system doesn't just guess; it provides mathematical proof:
 *   **Predicted Shape**: (e.g., "Heart", "Square", "Oval", "Round", "Oblong").
@@ -29,6 +31,8 @@ Most people struggle to find a haircut or beard style that suits them. They ofte
 *   **The Problem**: "One size fits all" doesn't work for faces.
 *   **The Solution**: This AI acts as an objective, mathematical consultant. It tells you *why* a style works (e.g., "This beard hides your sharp jaw" or "This haircut balances your round face").
 
+---
+
 ## ⚙️ What happens when you click "Analyze"?
 Here is the step-by-step journey of your image, explained simply:
 
@@ -39,20 +43,6 @@ Here is the step-by-step journey of your image, explained simply:
 5.  **The Council Vote**: The Geometry and the AI compare notes. If they disagree, a "Voting System" decides the winner based on confidence.
 6.  **The Expert Advice**: Once the shape is decided (e.g., "Oval"), the system opens its Rulebook (`rules.json`) and picks the correct advice for your gender.
 7.  **The Delivery**: The result travels back to your browser and appears as a card.
-
-## 📖 Project File Dictionary 
-If you browse the files, here is what each one actually does in plain English:
-
-| File Name | Explanation |
-| :--- | :--- |
-| `run_app.bat` | Double-click this to start everything. |
-| `requirements.txt` | Tells Python which tools (ingredients) to download. |
-| `src/app/main.py` | It directs web traffic (your image) to the right place. |
-| `src/recommendation/engine.py` | This is where the thinking happens. |
-| `src/recommendation/rules.json` | Contains all the grooming knowledge. |
-| `models/final_model.keras` | The file where the AI stores what it learned from 7,000 photos. |
-| `src/app/static/index.html` | The structure of the webpage you see. |
-| `src/app/static/style.css` | Makes the website look dark and modern. |
 
 ---
 
@@ -71,6 +61,8 @@ The AI was not just "trained once". We used a sophisticated **2-Stage Transfer L
 *   **Action**: We "Unfroze" the top 30% of the brain. We used a very low learning rate (`1e-5`) to gently nudge the weights.
 *   **Duration**: Tuned for **40 Epochs** with Early Stopping and model checkpointing.
 *   **Result**: The model achieved **83.4% validation accuracy** on completely unseen test data.
+
+---
 
 ### Model Versions Available
 | Model | Epochs | Validation Accuracy | Description |
@@ -218,6 +210,8 @@ The application provides:
 
 ---
 
-**Developed with ❤️ for better styling decisions**.
+**Documentation**.
 
 This documentation serves as the complete guide to the project.
+
+---

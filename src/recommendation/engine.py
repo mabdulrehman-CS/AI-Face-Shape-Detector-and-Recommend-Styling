@@ -12,6 +12,29 @@ from utils.geometry import get_face_metrics, classify_shape_heuristic
 from data.preprocess import align_face, crop_face
 from training.loss import get_focal_loss
 
+# Gender Detection using DeepFace
+DEEPFACE_LOADED = False
+DEEPFACE_MODULE = None
+
+def load_deepface():
+    """Load DeepFace for accurate gender detection"""
+    global DEEPFACE_LOADED, DEEPFACE_MODULE
+    if DEEPFACE_LOADED:
+        return True
+    
+    try:
+        from deepface import DeepFace
+        DEEPFACE_MODULE = DeepFace
+        DEEPFACE_LOADED = True
+        print("DeepFace gender detection loaded successfully")
+        return True
+    except Exception as e:
+        print(f"Warning: DeepFace not loaded: {e}")
+        return False
+
+# Pre-load at import time
+load_deepface()
+
 class RecommendationEngine:
     def __init__(self, model_path, rules_path):
         self.model_path = model_path # Store this for status checks
@@ -33,6 +56,52 @@ class RecommendationEngine:
         # Usually from alphabetical order of directories: Heart, Oblong, Oval, Round, Square
         self.class_names = sorted(list(self.rules.keys())) 
 
+    def detect_gender(self, img, landmarks_pixel):
+        """
+        Accurate gender detection using DeepFace.
+        Falls back to None if detection fails (allowing prediction to continue).
+        """
+        if not DEEPFACE_LOADED or DEEPFACE_MODULE is None:
+            print("DEBUG: DeepFace not loaded, skipping gender validation")
+            return None
+        
+        try:
+            # Convert BGR to RGB for DeepFace
+            img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            
+            # Use DeepFace for accurate gender detection
+            # Use opencv as detector (faster) and skip_check to avoid downloading models repeatedly
+            result = DEEPFACE_MODULE.analyze(
+                img_rgb, 
+                actions=['gender'],
+                enforce_detection=False,  # Don't fail if face not perfectly detected
+                detector_backend='opencv',  # Faster detector
+                silent=True  # Suppress logs
+            )
+            
+            # Result can be a list or dict
+            if isinstance(result, list):
+                result = result[0]
+            
+            gender_data = result.get('gender', {})
+            # gender_data is like {'Man': 95.5, 'Woman': 4.5}
+            man_conf = gender_data.get('Man', 0)
+            woman_conf = gender_data.get('Woman', 0)
+            
+            detected = 'Male' if man_conf > woman_conf else 'Female'
+            confidence = max(man_conf, woman_conf)
+            
+            print(f"DEBUG: DeepFace gender detection - {detected} ({confidence:.1f}% confidence)")
+            print(f"DEBUG: Man: {man_conf:.1f}%, Woman: {woman_conf:.1f}%")
+            
+            return detected
+            
+        except Exception as e:
+            print(f"DEBUG: DeepFace gender detection failed: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
+
     def predict(self, image_path, gender="Male"):
         print(f"DEBUG: Predicting for {image_path}, Gender: {gender}")
         img = cv2.imread(image_path)
@@ -42,13 +111,22 @@ class RecommendationEngine:
         
         print(f"DEBUG: Image loaded. Shape: {img.shape}")
         
-        # 1. Geometry Pipeline
+        # 1. Geometry Pipeline - Extract landmarks first (needed for gender detection)
         lms_norm = self.extractor.process_image(img)
         if lms_norm is None:
             print("ERROR: No face detected by MediaPipe")
             return {"error": "No face detected"}
             
         lms_pixel = self.extractor.get_landmarks_pixel(lms_norm, img.shape)
+        
+        # --- Quick Gender Validation (uses already-extracted landmarks) ---
+        detected_gender = self.detect_gender(img, lms_pixel)
+        if detected_gender:
+            print(f"DEBUG: Detected gender: {detected_gender}, Selected: {gender}")
+            if detected_gender.lower() != gender.lower():
+                return {
+                    "error": f"Gender mismatch! The photo appears to be {detected_gender}, but you selected {gender}. Please select the correct gender category or upload a different photo."
+                }
         
         img_aligned = align_face(img, lms_pixel)
         

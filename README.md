@@ -12,6 +12,12 @@ The system supports two distinct ways to analyze a face:
 2.  **File Upload**: Drag & drop high-resolution images.
     *   **Gender Selector**: You can specify **"Male"** or **"Female"** before analysis. This filters the results (e.g., showing Beards for men, Makeup for women).
 
+### 🔒 Smart Gender Validation
+To ensure accurate and relevant recommendations, the system includes **AI-powered gender validation**:
+*   **DeepFace Integration**: Uses the DeepFace library for accurate gender detection from facial features.
+*   **Automatic Mismatch Detection**: If you select "Male" but upload a female photo (or vice versa), the system will reject the image with a helpful error message.
+*   **Why This Matters**: Prevents inappropriate recommendations (e.g., beard styles for women) and ensures you get styling advice relevant to your gender.
+
 ---
 
 ### 🔍 Analysis Outputs
@@ -127,6 +133,7 @@ This project was built using the following robust technologies:
 | Category | Technology | Purpose |
 | :--- | :--- | :--- |
 | **AI Core** | **TensorFlow** | The engine behind the Deep Learning model. |
+| **Gender Detection** | **DeepFace** | Accurate gender validation from facial features. |
 | **Vision** | **MediaPipe** | Used for precise face landmark detection. |
 | **Vision** | **OpenCV** | Used for image processing, alignment, and cropping. |
 | **Backend** | **FastAPI** | High-performance Python web framework. |
